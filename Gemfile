@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+gem 'chef', '~> 18.0'
+gem 'chefspec', '~> 9.3'
+gem 'cookstyle', '~> 7.32'
+gem 'rake', '~> 13.2'
+gem 'minitest', '~> 5.25'
+gem 'ruby-shadow', '~> 2.5'
