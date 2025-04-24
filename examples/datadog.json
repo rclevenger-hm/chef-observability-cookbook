@@ -1,0 +1,12 @@
+{
+  "run_list": ["recipe[observability::default]"],
+  "observability": {
+    "node_exporter": {"enabled": false},
+    "datadog": {
+      "enabled": true,
+      "site": "datadoghq.com",
+      "tags": ["env:staging", "team:platform"],
+      "logs": [{"path": "/var/log/application/*.log", "service": "application", "source": "ruby"}]
+    }
+  }
+}
