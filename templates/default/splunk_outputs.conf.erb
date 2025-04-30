@@ -1,0 +1,12 @@
+# Managed by Chef. TLS verification is mandatory.
+[tcpout]
+defaultGroup = chef_observability
+
+[tcpout:chef_observability]
+server = <%= @servers.sort.uniq.join(',') %>
+useACK = true
+autoLBFrequency = 30
+useSSL = true
+sslVerifyServerCert = true
+sslVerifyServerName = true
+sslAltNameToCheck = <%= @server_names.sort.uniq.join(',') %>

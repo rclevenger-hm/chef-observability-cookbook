@@ -1,0 +1,8 @@
+# Managed by Chef. Local edits are replaced on the next converge.
+<% @monitors.sort_by { |monitor| monitor.fetch('path') }.each do |monitor| -%>
+[monitor://<%= monitor.fetch('path') %>]
+disabled = false
+index = <%= monitor.fetch('index') %>
+sourcetype = <%= monitor.fetch('sourcetype') %>
+
+<% end -%>
