@@ -1,0 +1,13 @@
+{
+  "run_list": ["recipe[observability::default]"],
+  "observability": {
+    "node_exporter": {"enabled": false},
+    "splunk": {
+      "enabled": true,
+      "servers": ["indexer.example.net:9997"],
+      "server_names": ["indexer.example.net"],
+      "ca_file": "/opt/splunkforwarder/etc/auth/receiver-ca.pem",
+      "monitors": [{"path": "/var/log/application/*.log", "index": "application", "sourcetype": "application:json"}]
+    }
+  }
+}
