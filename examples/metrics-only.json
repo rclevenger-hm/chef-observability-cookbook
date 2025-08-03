@@ -1,0 +1,8 @@
+{
+  "run_list": ["recipe[observability::default]", "recipe[observability::chef_metrics]"],
+  "observability": {
+    "node_exporter": {"enabled": true, "listen_address": "127.0.0.1:9100"},
+    "datadog": {"enabled": false},
+    "splunk": {"enabled": false}
+  }
+}
