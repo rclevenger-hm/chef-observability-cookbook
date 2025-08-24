@@ -1,0 +1,6 @@
+[
+  {
+    "targets": ["exporter:9100"],
+    "labels": {"environment": "demo", "team": "platform"}
+  }
+]
