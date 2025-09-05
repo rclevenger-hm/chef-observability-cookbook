@@ -1,0 +1,28 @@
+groups:
+  - name: host-observability
+    rules:
+      - alert: HostExporterDown
+        expr: up{job="node"} == 0
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: 'Exporter unavailable on {{ $labels.instance }}'
+          description: 'Check the service, scrape address, firewall and network path.'
+      - alert: HostDiskSpaceLow
+        expr: node_filesystem_avail_bytes{fstype!~"tmpfs|overlay|squashfs"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay|squashfs"} < 0.1 and node_filesystem_readonly == 0
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: 'Less than 10% disk space on {{ $labels.instance }}'
+      - alert: ChefClientFailed
+        expr: chef_client_last_run_success == 0
+        for: 5m
+        labels: {severity: warning}
+        annotations:
+          summary: 'Chef failed on {{ $labels.instance }}'
+      - alert: ChefClientStale
+        expr: time() - chef_client_last_run_timestamp_seconds > 7200
+        for: 15m
+        labels: {severity: warning}
+        annotations:
+          summary: 'Chef has not completed within two hours on {{ $labels.instance }}'
