@@ -1,0 +1,42 @@
+rule_files: [alerts.yml]
+evaluation_interval: 1m
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'up{job="node",instance="host:9100"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: HostExporterDown
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: HostExporterDown
+        exp_alerts:
+          - exp_labels: {job: node, instance: 'host:9100', severity: warning}
+            exp_annotations:
+              summary: 'Exporter unavailable on host:9100'
+              description: 'Check the service, scrape address, firewall and network path.'
+  - interval: 1m
+    input_series:
+      - series: 'chef_client_last_run_success{instance="host:9100"}'
+        values: '0+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: ChefClientFailed
+        exp_alerts:
+          - exp_labels: {instance: 'host:9100', severity: warning}
+            exp_annotations:
+              summary: 'Chef failed on host:9100'
+  - interval: 1m
+    input_series:
+      - series: 'up{job="node",instance="host:9100"}'
+        values: '1+0x10'
+      - series: 'chef_client_last_run_success{instance="host:9100"}'
+        values: '1+0x10'
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: HostExporterDown
+        exp_alerts: []
+      - eval_time: 6m
+        alertname: ChefClientFailed
+        exp_alerts: []
