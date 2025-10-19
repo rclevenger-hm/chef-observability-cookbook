@@ -1,0 +1,5 @@
+name: observability-node-exporter
+title: Node Exporter runtime verification
+version: 0.1.0
+supports:
+  - os-family: linux
