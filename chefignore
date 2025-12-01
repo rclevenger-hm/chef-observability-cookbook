@@ -1,0 +1,14 @@
+.git
+.github
+.bundle
+.kitchen
+vendor
+spec
+test
+demo
+docs
+scripts
+Gemfile*
+Rakefile
+kitchen.yml
+*.md
