@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          ruby-version: '3.3'
           bundler-cache: true
       - run: bundle exec rake
       - run: bundle exec cookstyle --only Chef/Correctness,Lint --fail-level refactor
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1'
+          ruby-version: '3.3'
           bundler-cache: true
       - name: Converge exporter and vendor configuration fixtures
         run: |
