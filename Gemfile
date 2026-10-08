@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-gem 'chef', '~> 18.0'
+gem 'chef', '~> 19.3'
 gem 'chefspec', '~> 9.3'
 gem 'cookstyle', '~> 9.0'
 gem 'rake', '~> 13.2'
