@@ -22,7 +22,7 @@ jobs:
         run: |
           bundle exec ruby -rchef -rchef/cookbook/metadata -e 'm = Chef::Cookbook::Metadata.new; m.from_file("metadata.rb"); abort "Tag does not match cookbook version" unless ENV.fetch("RELEASE_TAG") == "v#{m.version}"'
           bundle exec ruby scripts/package.rb
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: observability-cookbook
           path: tmp/observability-*.tar.gz
