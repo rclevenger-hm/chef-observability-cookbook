@@ -1,0 +1,77 @@
+name: Cookbook CI
+on:
+  push:
+    branches: [main, dev, 'build/**']
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+permissions:
+  contents: read
+concurrency:
+  group: cookbook-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  unit:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - run: bundle exec rake
+      - run: bundle exec cookstyle --only Chef/Correctness,Lint --fail-level refactor
+      - name: Package cookbook with Chef
+        run: bundle exec ruby scripts/package.rb
+      - name: Resolved dependencies
+        if: always()
+        run: cat Gemfile.lock
+  converge:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Converge exporter and vendor configuration fixtures
+        run: |
+          sudo env "PATH=$PATH" bundle exec ruby scripts/chef_client.rb -z -c test/client.rb -o 'recipe[observability::default],recipe[observability_test::configuration]' --chef-license accept-no-persist
+          curl --fail --retry 5 --retry-delay 2 http://127.0.0.1:9100/metrics | grep node_uname_info
+      - name: Verify second converge is idempotent
+        shell: bash
+        run: |
+          set -o pipefail
+          sudo env "PATH=$PATH" bundle exec ruby scripts/chef_client.rb -z -c test/client.rb -o 'recipe[observability::default],recipe[observability_test::configuration]' --chef-license accept-no-persist | tee /tmp/second-converge.log
+          grep -E '0/[0-9]+ resources updated' /tmp/second-converge.log
+      - name: Check file protection and Splunk TLS
+        run: |
+          test "$(stat -c %a /etc/datadog-agent/datadog.yaml)" = 600
+          grep -q 'useSSL = true' /opt/splunkforwarder/etc/apps/chef_observability/local/outputs.conf
+          grep -q 'sslVerifyServerName = true' /opt/splunkforwarder/etc/apps/chef_observability/local/outputs.conf
+      - name: Verify Chef run metrics
+        run: |
+          sudo env "PATH=$PATH" bundle exec ruby scripts/chef_client.rb -z -c test/client.rb -o 'recipe[observability::chef_metrics]' --chef-license accept-no-persist
+          curl --fail http://127.0.0.1:9100/metrics | grep 'chef_client_last_run_success 1'
+  demo:
+    runs-on: ubuntu-22.04
+    env:
+      GRAFANA_ADMIN_PASSWORD: ci-only-random-demo-password
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Chef-converged exporter
+        run: docker compose -f demo/compose.yaml build
+      - name: Validate Prometheus config and alert rules
+        run: |
+          docker compose -f demo/compose.yaml run --rm --no-deps --entrypoint promtool prometheus check config /etc/prometheus/prometheus.yml
+          docker compose -f demo/compose.yaml run --rm --no-deps --entrypoint promtool prometheus test rules /etc/prometheus/alerts.test.yml
+      - name: Start and verify the complete stack
+        run: |
+          docker compose -f demo/compose.yaml up -d
+          python3 scripts/check_demo.py
+      - name: Show logs
+        if: failure()
+        run: docker compose -f demo/compose.yaml logs --no-color
+      - name: Clean up
+        if: always()
+        run: docker compose -f demo/compose.yaml down -v

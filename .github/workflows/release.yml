@@ -1,0 +1,29 @@
+name: Validate release package
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+  package:
+    needs: validate
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+      - name: Check tag and build package
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          bundle exec ruby -rchef -rchef/cookbook/metadata -e 'm = Chef::Cookbook::Metadata.new; m.from_file("metadata.rb"); abort "Tag does not match cookbook version" unless ENV.fetch("RELEASE_TAG") == "v#{m.version}"'
+          bundle exec ruby scripts/package.rb
+      - uses: actions/upload-artifact@v4
+        with:
+          name: observability-cookbook
+          path: tmp/observability-*.tar.gz
+          if-no-files-found: error
