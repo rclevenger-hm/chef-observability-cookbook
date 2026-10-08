@@ -16,6 +16,10 @@ behavior when run by a maintainer with the required environment.
 
 ## Commands
 
+Use Ruby 3.3 for development, CI, releases, and the Docker demo. The `Gemfile`
+declares the supported Ruby series so dependency updates resolve compatible gems.
+Minitest 6 requires Ruby 3.2 or later; the previous Ruby 3.1 runner cannot install it.
+
 ```sh
 bundle install
 bundle exec rake
@@ -27,6 +31,11 @@ python3 scripts/check_demo.py
 The Ruby gem distribution is invoked through `scripts/chef_client.rb`, which loads
 Chef's application entrypoint. Chef Workstation installations may use `chef-client`
 directly. `test/client.rb` is exclusively a disposable integration test configuration.
+
+The automated converge and demo use Chef 18. Chef 19 from RubyGems requires a runtime
+license key, so its major update is intentionally excluded from Dependabot until a
+licensed test environment is available. Chef 18 minor and patch updates remain enabled.
+See [Chef 19 licensing](https://docs.chef.io/client/19/license/) for the requirements.
 
 For the optional VM suite, install Chef Workstation, Vagrant, a compatible hypervisor,
 and the `kitchen-vagrant`/`kitchen-inspec` plugins. Review Chef's license configuration
