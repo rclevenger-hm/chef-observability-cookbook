@@ -110,7 +110,8 @@ GEM
       builder (>= 2.1.2)
       chef-gyoku (~> 1.5)
       erubi (~> 1.8)
-      gssapi (~> 1.2)
+      gitlab-ruby-shadow (2.6.0)
+    gssapi (~> 1.2)
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.7)
@@ -350,7 +351,6 @@ GEM
       parser (>= 3.3.7.2)
       prism (~> 1.7)
     ruby-progressbar (1.13.0)
-    ruby-shadow (2.5.1)
     rubyntlm (0.6.8)
       base64
     rubyzip (3.7.0)
@@ -430,9 +430,9 @@ DEPENDENCIES
   chef (~> 18.0)
   chefspec (~> 9.3)
   cookstyle (~> 9.0)
+  gitlab-ruby-shadow (~> 2.6)
   minitest (~> 6.0)
   rake (~> 13.2)
-  ruby-shadow (~> 2.5)
 
 BUNDLED WITH
    2.3.27

@@ -19,6 +19,8 @@ behavior when run by a maintainer with the required environment.
 Use Ruby 3.3 for development, CI, releases, and the Docker demo. The `Gemfile`
 declares the supported Ruby series so dependency updates resolve compatible gems.
 Minitest 6 requires Ruby 3.2 or later; the previous Ruby 3.1 runner cannot install it.
+The maintained `gitlab-ruby-shadow` fork provides Chef's `shadow` extension on newer Ruby;
+the original `ruby-shadow` 2.5.1 cannot compile there.
 
 ```sh
 bundle install
