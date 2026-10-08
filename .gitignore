@@ -1,0 +1,11 @@
+.bundle/
+vendor/
+.kitchen/
+.chef/
+coverage/
+*.gem
+*.log
+.env
+secrets/
+tmp/
+__pycache__/
